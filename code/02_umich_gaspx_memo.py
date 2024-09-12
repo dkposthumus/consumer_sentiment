@@ -111,7 +111,6 @@ def run_regression(df, dependent_var, independent_vars):
 # Loop Through Dates and Run Regressions
 for date in umich_filtered_df['date'].unique():
     temp_df = umich_filtered_df[umich_filtered_df['date'] == date]
-    print(temp_df)
     for var, coefficients_df_temp  in zip(['GAS1', 'GAS5'], 
                                                          [coefficients_gas1, coefficients_gas5]):
         temp_df_gas = temp_df.dropna(subset=[var])
