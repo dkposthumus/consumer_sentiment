@@ -3,16 +3,16 @@ from pathlib import Path
 import numpy as np
 import statsmodels.api as sm
 import matplotlib.pyplot as plt
-# let's create a set of locals referring to our directory and working directory 
+# Set up directories
 home_dir = Path.home()
-work_dir = (home_dir / 'consumer_sentiment')
-data = (work_dir / 'data')
-raw_data = (data / 'raw')
-code = Path.cwd() 
-output = (work_dir / 'output')
-gas_figures = (output / 'umich_figures' / 'gaspx')
+work_dir = home_dir / 'consumer_sentiment'
+data_dir = work_dir / 'data' / 'raw'
+output_dir = work_dir / 'output'
+gas_figures = output_dir / 'umich_figures' / 'gaspx'
 
-umich_microdata_df = pd.read_csv(f'{raw_data}/umich_microdata.csv', header=0)
+# Load data
+umich_microdata_df = pd.read_csv(data_dir / 'umich_microdata.csv')
+usa_retail_all_df = pd.read_csv(data_dir / 'usa_all_retail.csv')
 
 # let's convert YYYYMM into a proper datetime variable
 umich_microdata_df['year'] = pd.to_numeric(umich_microdata_df['YYYY'])
@@ -25,37 +25,76 @@ umich_microdata_df['dem'] = np.where(umich_microdata_df['POLAFF'] == 2, 1, 0)
 umich_microdata_df['rep'] = np.where(umich_microdata_df['POLAFF'] == 1, 1, 0)
 umich_microdata_df['independent'] = np.where(umich_microdata_df['POLAFF'] == 3, 1, 0)
 umich_microdata_df['other'] = np.where(umich_microdata_df['POLAFF'] == 7, 1, 0)
-'''
-umich_microdata_df['strong dem'] = np.where(umich_microdata_df['POLDEM'] == 1, 1, 0)
-umich_microdata_df['strong rep'] = np.where(umich_microdata_df['POLREP'] == 1, 1, 0)
-umich_microdata_df['gas prices go up next 5 years'] = np.where(umich_microdata_df['GASPX1'] == 1, 1, 0)
-umich_microdata_df['gas prices constant next 5 years'] = np.where(umich_microdata_df['GASPX1'] == 3, 1, 0)
-umich_microdata_df['gas prices go down next 5 years'] = np.where(umich_microdata_df['GASPX1'] == 5, 1, 0)
-'''
+
 # drop the missing/don't know codes:
 values_to_drop = [-997, 996, 998, 999]
-for var in ['GAS1', 'GAS5']:
-    umich_microdata_df = umich_microdata_df[~umich_microdata_df[var].isin(values_to_drop)]
-
-usa_retail_all_df = pd.read_csv(f'{raw_data}/usa_all_retail.csv')
+umich_microdata_df = (umich_microdata_df[~umich_microdata_df[['GAS1', 'GAS5']]
+                                         .isin(values_to_drop).any(axis=1)])
+# convert date to datetime (so that we get a clean pd.merge later)
 usa_retail_all_df['date'] = pd.to_datetime(usa_retail_all_df['date'])
-for var, period in zip(['gas price change', 'gas1 change', 'gas5 change'],
-                       [1, 12, 60]):
-    usa_retail_all_df[var] = pd.to_numeric(usa_retail_all_df['usa retail all'].diff(periods=period))
-
+for var, period in zip(['gas 1-month pct. change', 'gas 1-yr pct. change', 
+                        'gas 5-yr pct. change'], [1, 12, 60]):
+    usa_retail_all_df[var] = (pd.to_numeric(usa_retail_all_df['usa retail all']
+                                            .pct_change(periods=period))) * 100
+# merge two datasets together
 umich_microdata_df = pd.merge(umich_microdata_df, usa_retail_all_df, on='date', how='outer')
-
-for var in umich_microdata_df.columns:
-    umich_microdata_df[var] = pd.to_numeric(umich_microdata_df[var], errors='coerce')
-
+# convert all columns to numeric
+umich_microdata_df = umich_microdata_df.apply(pd.to_numeric, errors='coerce')
 umich_microdata_df['date'] = pd.to_datetime(umich_microdata_df['date'])
+# cut off dataset at 2017-10-01, which is when UMich started asking about
+# partisan affiliation
 start_date = pd.to_datetime('2017-10-01')
 umich_filtered_df = umich_microdata_df[umich_microdata_df['date']>=start_date]
-
+# now let's define the Biden presidency through a dummy variable
 biden_start = pd.to_datetime('2021-01-01')
-biden_end = umich_filtered_df['date'].max()
-umich_filtered_df['biden'] = ((umich_filtered_df['date'] >= biden_start) & (umich_filtered_df['date'] <= biden_end)).astype(int)
-umich_filtered_df['biden'] = umich_filtered_df['biden'].fillna(0)
+umich_filtered_df['biden'] = (((umich_filtered_df['date'] >= biden_start))
+                              .astype(int))
+# create 2 temporary datasets corresponding to the biden presidency and pre-biden presidency
+biden_df = umich_filtered_df[umich_filtered_df['biden'] == 1]
+pre_biden_df = umich_filtered_df[umich_filtered_df['biden'] == 0]
+
+# define function to calculate z-score
+def calculate_zscore(series):
+    return (series - series.mean()) / series.std()
+
+# let's plot z-scores over time: 
+def plot_gas_chg_time_series(df, zscore_vars, gaspx_chg_vars, title, period):
+    fig, ax1 = plt.subplots(figsize=(10, 6))
+    for var in zscore_vars:
+        ax1.plot(df['date'], df[var], linestyle='-', label=f'{var} Z-Score')
+    ax1.axvline(pd.to_datetime('2021-01-01'), color='black', linewidth=2.5, linestyle='--', label='Joe Biden Inauguration')
+    ax1.axhline(0, color='black', linewidth=2.5, linestyle='-')
+    ax1.set_xlabel('Date')
+    ax1.set_ylabel('Standard Deviations from Mean % Change')
+    ax1.tick_params(axis='y')
+    ax1.grid(True)
+    ax2 = ax1.twinx()
+    for var in gaspx_chg_vars:
+        ax2.plot(df['date'], df[var], linestyle='--', label={var}, color='purple', 
+                 linewidth=1.5)
+    ax2.set_ylabel('% {period.title()} change')
+    ax2.tick_params(axis='y', colors='black')
+    lines_1, labels_1 = ax1.get_legend_handles_labels()
+    lines_2, labels_2 = ax2.get_legend_handles_labels()
+    ax1.legend(lines_1 + lines_2, labels_1 + labels_2, loc='upper left')
+    plt.title(title)
+    plt.xticks(rotation=45)
+    plt.tight_layout()
+    plt.show()
+
+periods = ['1-month', '1-yr', '5-yr']
+
+for period in periods:
+    umich_filtered_df.loc[umich_filtered_df['biden'] == 1, 
+                        f'{period} pct. change zscore, biden'] = (
+                        calculate_zscore(biden_df[f'gas {period} pct. change']))
+    umich_filtered_df.loc[umich_filtered_df['biden'] == 0, 
+                        f'{period} pct. change zscore, pre-biden'] = (
+                        calculate_zscore(pre_biden_df[f'gas {period} pct. change']))
+    zscore_vars = [f'{period} pct. change zscore, biden', f'{period} pct. change zscore, pre-biden']
+    gaspx_chg_vars = [f'gas {period} pct. change']
+    plot_gas_chg_time_series(umich_filtered_df, zscore_vars, gaspx_chg_vars, 
+                             f'{period} Gas Price Percent Change Z-Scores', period)
 
 for var in ['GAS1', 'GAS5']:
     umich_filtered_df[var] = umich_filtered_df[var]*0.01
