@@ -51,6 +51,81 @@ macro_var_df = process_sp500("2000-01-01", datetime.now().strftime('%Y-%m-%d'))
 for key in dfs:
     macro_var_df = pd.merge(macro_var_df, dfs[key], on='date', how='outer')
 
+def biden_var_creation(df):
+    biden_start = pd.to_datetime('2021-01-01')
+    biden_end = df['date'].max()
+    df['biden'] = ((df['date'] >= biden_start) & (df['date'] <= biden_end)).astype(int)
+    df['biden'] = df['biden'].fillna(0)
+    return df
+
+start_date = pd.to_datetime('2017-10-01')
+macro_var_df = macro_var_df[macro_var_df['date']>=start_date]
+biden_var_creation(macro_var_df)
+
+def calculate_zscore(series):
+    return (series - series.mean()) / series.std()
+
+biden_df = macro_var_df[macro_var_df['biden'] == 1]
+pre_biden_df = macro_var_df[macro_var_df['biden'] == 0]
+
+for var, savepath in zip(['sp500', 'zillow index', 'used car cpi', 
+                'real disposable income', 'headline cpi'], ['sp500', 'zillow', 'used_car', 
+                'rinc', 'headline_cpi']):
+    for horizon in ['monthly', 'yoy']:
+        macro_var_df.loc[macro_var_df['biden'] == 1, 
+                        f'{var} {horizon} pct. change zscore, biden'] = (
+                        calculate_zscore(biden_df[f'{var}, %{horizon}']))
+        macro_var_df.loc[macro_var_df['biden'] == 0, 
+                        f'{var} {horizon} pct. change zscore, pre-biden'] = (
+                        calculate_zscore(pre_biden_df[f'{var}, %{horizon}']))
+        zscore_vars = [f'{var} {horizon} pct. change zscore, biden', 
+                   f'{var} {horizon} pct. change zscore, pre-biden']
+        chg_vars = [f'{var}, %{horizon}']
+        fig, ax1 = plt.subplots(figsize=(10, 6))
+        for zscore_var in zscore_vars:
+            ax1.plot(macro_var_df['date'], macro_var_df[zscore_var], label=zscore_var, 
+                     linewidth=1, alpha=0.6)
+        ax1.set_xlabel('Date')
+        ax1.set_ylabel('Z-Score')
+        ax1.axhline(0, color='black', linewidth=1, linestyle='-')
+        ax1.axvline(pd.to_datetime('2021-01-01'), color='black', linewidth=3, linestyle='--', 
+                    label='Joe Biden Inauguration')
+        ax1.grid(True)
+        ax1.legend(loc='upper left')
+        ax2 = ax1.twinx()
+        for chg_var in chg_vars:
+            ax2.plot(macro_var_df['date'], macro_var_df[chg_var], label=chg_var, 
+                    linewidth=1.5, alpha=0.6, linestyle='--', color='red')
+        ax2.set_ylabel('% Change')
+        
+        y1_min, y1_max = ax1.get_ylim()  # Get limits of the primary axis (z-scores)
+        y2_min, y2_max = ax2.get_ylim()  # Get limits of the secondary axis (% changes)
+
+        primary_zero_pos = abs(y1_min) / (y1_max - y1_min)
+
+        secondary_range = y2_max - y2_min
+        new_y2_min = -primary_zero_pos * secondary_range * 1.25  # Scale the min for the secondary axis
+        new_y2_max = (1 - primary_zero_pos) * secondary_range * 1.25 # Scale the max for the secondary axis
+
+        ax2.set_ylim(new_y2_min, new_y2_max)
+        
+        ax2.legend(loc='upper right')
+        plt.title(f'Z-Score and Raw % Change Variables for {var.capitalize()} ({horizon.capitalize()})')
+        fig.tight_layout()
+        if horizon == 'monthly':
+            plt.savefig(f'{macro_figures}/{savepath}_zscore.png')
+            plt.show()
+        if horizon == 'yoy' and var == 'headline cpi':
+            
+            new_y2_min = new_y2_min * 1.75
+            new_y2_max = new_y2_max * 1.75
+
+            ax2.set_ylim(new_y2_min, new_y2_max)
+
+            plt.savefig(f'{macro_figures}/{savepath}_zscore.png')
+            plt.show()
+        plt.close()
+
 # okay, macro variables are cleaned. let's import and clean the umich microdata now:
 umich_microdata_df = pd.read_csv(f'{raw_data}/umich_microdata.csv', header=0)
 # let's convert YYYYMM into a proper datetime variable
@@ -67,7 +142,7 @@ umich_microdata_df['other'] = np.where(umich_microdata_df['POLAFF'] == 7, 1, 0)
 # so basically i need to craft the _r variable using individual observations: 
     # those are calculated as (the percentage who say variable_x is good) 
     # - (percentage who say variable_y is bad)
-def plot_time_series(data, parties, party_labels, variable, title, ylabel, save_path):
+def plot_time_series(data, parties, party_labels, variable, title, ylabel, save, save_path):
     plt.figure(figsize=(14, 7))
     colors = plt.get_cmap('tab10')
     for i, (party, party_label) in enumerate(zip(parties, party_labels)):
@@ -78,18 +153,18 @@ def plot_time_series(data, parties, party_labels, variable, title, ylabel, save_
                  color=color, linewidth=2, label=f'{party_label} 6-Month MA')
         plt.plot(party_data['date'], party_data[variable], label=f'{party_label}', 
                  color=color, linewidth=0.5, alpha=0.6)
-
     plt.title(title)
     plt.xlabel('Year')
     plt.ylabel(ylabel)
-    plt.axvline(pd.to_datetime('2020-03-01'), color='black', linewidth=3, 
+    plt.axvline(pd.to_datetime('2020-03-01'), color='grey', linewidth=3, 
                 linestyle='--', label='COVID-19 Pandemic Outbreak')
-    plt.axvline(pd.to_datetime('2020-12-01'), color='black', linewidth=3, 
+    plt.axvline(pd.to_datetime('2020-12-01'), color='brown', linewidth=3, 
                 linestyle='--', label='Joe Biden Election')
     plt.legend(loc='upper left')
     plt.grid(True)
     plt.tight_layout()
-    plt.savefig(save_path)
+    if save==True:
+        plt.savefig(save_path)
     plt.show()
 
 panel_data_frames = []
@@ -118,7 +193,8 @@ for var, result_r, graph_label in zip(['GOVT', 'CAR', 'HOM', 'RINC', 'BAGO', 'PA
     temp_df = pd.DataFrame(panel_data)
     plot_time_series(temp_df, ['dem', 'rep', 'independent'], ['Democrat', 'Republican', 'Independent'], 
                      result_r, f'{graph_label} Net Attitudes, by Partisan Affiliation',
-                     'Good - Bad (%)', f'{macro_figures}/{result_r}_time_series.png')
+                     'Good - Bad (%)', save=True, 
+                     save_path=f'{macro_figures}/{result_r}_time_series.png')
     panel_data_frames.append(temp_df)
 # now there are 2 trickier ones to analyze over time: 
     # PSTK (percentage chance investment will increase in next year)
@@ -130,9 +206,11 @@ for party in ['dem', 'rep', 'independent']:
     average_pstk[party] = 1
     average_pstk_df = pd.concat([average_pstk_df, average_pstk])
 panel_data_frames.append(average_pstk_df)
-plot_time_series(average_pstk_df, ['dem', 'rep', 'independent'], ['Democrat', 'Republican', 'Independent'],
-                 'PSTK', 'Mean Predicted Likelihood of Positive Stock Performance, by Partisan Affiliation',
-                 'Percentage', f'{macro_figures}/PSTK_time_series.png')
+plot_time_series(average_pstk_df, ['dem', 'rep', 'independent'], 
+                 ['Democrat', 'Republican', 'Independent'],
+                 'PSTK', 
+                 'Mean Predicted Likelihood of Positive Stock Performance, by Partisan Affiliation',
+                 'Percentage', save=True, save_path=f'{macro_figures}/PSTK_time_series.png')
 
 # now find percentage of people who answered 'NEWS1' or 'NEWS2' with 72
 newsrn_u_pri_df = pd.DataFrame()
@@ -151,26 +229,17 @@ for party in parties:
     party_data = percentage_df[percentage_df[party] == 1]
     newsrn_u_pri_df = pd.concat([newsrn_u_pri_df, party_data])
 panel_data_frames.append(newsrn_u_pri_df)
-plot_time_series(newsrn_u_pri_df, ['dem', 'rep', 'independent'], ['Democrat', 'Republican', 'Independent'],
-                 'newsrn_u_pri', '% Reported Unfavorable News Coverage of Inflation, by Partisan Affiliation',
-                 'Percentage', f'{macro_figures}/newsrn_u_pri_time_series.png')
+plot_time_series(newsrn_u_pri_df, ['dem', 'rep', 'independent'],
+                 ['Democrat', 'Republican', 'Independent'],
+                 'newsrn_u_pri', 
+                 '% Reported Unfavorable News Coverage of Inflation, by Partisan Affiliation',
+                 'Percentage', save=True, save_path=f'{macro_figures}/newsrn_u_pri_time_series.png')
 panel_data_frames = [df.reset_index(drop=True) for df in panel_data_frames]
 panel_df = pd.concat(panel_data_frames, axis=1)
 panel_df = panel_df.loc[:,~panel_df.columns.duplicated()]
 
 # now we need to run regressions: 
 panel_umich_df = pd.merge(panel_df, macro_var_df, on='date', how='left')
-
-def biden_var_creation(df):
-    biden_start = pd.to_datetime('2021-01-01')
-    biden_end = df['date'].max()
-    df['biden'] = ((df['date'] >= biden_start) & (df['date'] <= biden_end)).astype(int)
-    df['biden'] = df['biden'].fillna(0)
-    return df
-
-start_date = pd.to_datetime('2017-10-01')
-panel_umich_df = panel_umich_df[panel_umich_df['date']>=start_date]
-biden_var_creation(panel_umich_df)
 
 def run_regression(df, dependent_var, independent_vars):
     X = sm.add_constant(df[independent_vars])
@@ -201,12 +270,13 @@ macro_vars = ['used car cpi', 'zillow index', 'real disposable income', 'sp500',
 coefficients_list = []
 for outcome, regressor in zip(umich_vars, macro_vars):
     for party in ['dem', 'rep', 'independent']:
-        for model_spec, model_name in zip([', %monthly', ', %yoy'], ['monthly model', 'yoy model']):
-            for biden_value in [1, 0]:
+        for horizon, model_name in zip(['monthly', 'yoy'], ['monthly model', 'yoy model']):
+            for biden_value, biden_descr in zip([1, 0], ['biden', 'pre-biden']):
                 df_biden = (panel_umich_df[(panel_umich_df[party] == 1) 
                                               & (panel_umich_df['biden'] == biden_value)])
-                run_and_store_regression(df_biden, outcome, f"{regressor}{model_spec}", 
-                                         party, biden_value, model_name, coefficients_list)
+                run_and_store_regression(df_biden, outcome, 
+                            f"{regressor} {horizon} pct. change zscore, {biden_descr}", 
+                            party, biden_value, model_name, coefficients_list)
 coefficients_df = pd.DataFrame(coefficients_list, 
                                columns=[
                                    'model', 'umich_var', 'beta_0',
@@ -259,8 +329,8 @@ def plot_regression_coefficients(coefficients_df, umich_var,
     plt.show()
 
 models=['monthly model', 'yoy model']
-model_save_names=['month', 'yoy']
-model_labs=['Monthly % Change', 'YoY % Change']
+model_save_names=['monthly', 'yoy']
+model_labs=['Monthly % Change Z-Score', 'YoY % Change Z-Score']
 umich_vars = ['veh_r', 'hom_r', 'rinc_r', 'PSTK', 'newsrn_u_pri']
 umich_labs=['Car-Buying Attitudes', 'Home-Buying Attitudes', 'Real Family Income Attitues',
             'Predicted Likelihood of Positive Stock Performance',
@@ -275,11 +345,7 @@ for umich_var, umich_lab, umich_save_name in zip(umich_vars, umich_labs, umich_s
         party_labels, f'{macro_figures}/{model_save_name}_{umich_save_name}_party_comp.png')
 # now let's run the same regressions but on an individual level
     # so now we're not recreating the '_r' variables but instead creating a series of dummies:
-start_date = pd.to_datetime('2017-10-01')
-umich_filtered_df = umich_microdata_df[umich_microdata_df['date'] >= start_date]
-biden_var_creation(umich_filtered_df)
-
-umich_filtered_df = pd.merge(umich_filtered_df, macro_var_df, on='date', how='left')
+umich_filtered_df = pd.merge(umich_microdata_df, macro_var_df, on='date', how='left')
 
 # now create our series of dummy variables:
 for outcome, regressor in zip(['CAR', 'HOM', 'RINC'],
@@ -298,12 +364,13 @@ macro_vars = ['used car cpi', 'zillow index', 'real disposable income', 'sp500',
 coefficients_micro_list = []
 for outcome, regressor in zip(umich_vars, macro_vars):
     for party in ['dem', 'rep', 'independent']:
-        for model_spec, model_name in zip([', %monthly', ', %yoy'], ['monthly model', 'yoy model']):
-            for biden_value in [1, 0]:
+        for horizon, model_name in zip(['monthly', 'yoy'], ['monthly model', 'yoy model']):
+            for biden_value, biden_descr in zip([1, 0], ['biden', 'pre-biden']):
                 df_biden = umich_filtered_df[(umich_filtered_df[party] == 1) 
                                              & (umich_filtered_df['biden'] == biden_value)]
-                run_and_store_regression(df_biden, outcome, f"{regressor}{model_spec}", party, 
-                                         biden_value, model_name, coefficients_micro_list)
+                run_and_store_regression(df_biden, outcome, 
+                            f"{regressor} {horizon} pct. change zscore, {biden_descr}", party, 
+                            biden_value, model_name, coefficients_micro_list)
 coefficients_micro_df = pd.DataFrame(coefficients_micro_list, 
                                columns=[
                                    'model', 'umich_var', 'beta_0',

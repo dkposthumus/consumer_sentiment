@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.141592653-2.6-1.40.26 (TeX Live 2024) (preloaded format=pdflatex 2024.7.31)  11 SEP 2024 12:12
+This is pdfTeX, Version 3.141592653-2.6-1.40.26 (TeX Live 2024) (preloaded format=pdflatex 2024.7.31)  16 SEP 2024 16:25
 entering extended mode
  restricted \write18 enabled.
  file:line:error style messages enabled.
@@ -367,140 +367,151 @@ Underfull \hbox (badness 10000) in paragraph at lines 16--17
 
  []
 
-</Users/danpost/consumer_sentiment/output/umich_figures/gaspx/gas1_levels.png, 
-id=7, 722.7pt x 433.62pt>
-File: /Users/danpost/consumer_sentiment/output/umich_figures/gaspx/gas1_levels.
-png Graphic file (type png)
-<use /Users/danpost/consumer_sentiment/output/umich_figures/gaspx/gas1_levels.p
-ng>
+</Users/danpost/consumer_sentiment/output/umich_figures/gaspx/gas1_party_comp.p
+ng, id=31, 722.7pt x 433.62pt>
+File: /Users/danpost/consumer_sentiment/output/umich_figures/gaspx/gas1_party_c
+omp.png Graphic file (type png)
+<use /Users/danpost/consumer_sentiment/output/umich_figures/gaspx/gas1_party_co
+mp.png>
 Package pdftex.def Info: /Users/danpost/consumer_sentiment/output/umich_figures
-/gaspx/gas1_levels.png  used on input line 18.
+/gaspx/gas1_party_comp.png  used on input line 18.
 (pdftex.def)             Requested size: 325.215pt x 195.1272pt.
-</Users/danpost/consumer_sentiment/output/umich_figures/gaspx/gas5_levels.png, 
-id=9, 722.7pt x 433.62pt>
-File: /Users/danpost/consumer_sentiment/output/umich_figures/gaspx/gas5_levels.
-png Graphic file (type png)
-<use /Users/danpost/consumer_sentiment/output/umich_figures/gaspx/gas5_levels.p
-ng>
+</Users/danpost/consumer_sentiment/output/umich_figures/gaspx/gas5_party_comp.p
+ng, id=33, 722.7pt x 433.62pt>
+File: /Users/danpost/consumer_sentiment/output/umich_figures/gaspx/gas5_party_c
+omp.png Graphic file (type png)
+<use /Users/danpost/consumer_sentiment/output/umich_figures/gaspx/gas5_party_co
+mp.png>
 Package pdftex.def Info: /Users/danpost/consumer_sentiment/output/umich_figures
-/gaspx/gas5_levels.png  used on input line 19.
+/gaspx/gas5_party_comp.png  used on input line 19.
 (pdftex.def)             Requested size: 325.215pt x 195.1272pt.
 [1
 
 {/usr/local/texlive/2024/texmf-var/fonts/map/pdftex/updmap/pdftex.map} </Users/
-danpost/consumer_sentiment/output/umich_figures/gaspx/gas1_levels.png> </Users/
-danpost/consumer_sentiment/output/umich_figures/gaspx/gas5_levels.png>]
-</Users/danpost/consumer_sentiment/output/umich_figures/gaspx/regressor_comp.pn
-g, id=25, 867.24pt x 433.62pt>
-File: /Users/danpost/consumer_sentiment/output/umich_figures/gaspx/regressor_co
-mp.png Graphic file (type png)
-<use /Users/danpost/consumer_sentiment/output/umich_figures/gaspx/regressor_com
-p.png>
+danpost/consumer_sentiment/output/umich_figures/gaspx/gas1_party_comp.png> </Us
+ers/danpost/consumer_sentiment/output/umich_figures/gaspx/gas5_party_comp.png>]
+</Users/danpost/consumer_sentiment/output/umich_figures/gaspx/1-month_gas_zscor
+e_time_series.png, id=47, 722.7pt x 433.62pt>
+File: /Users/danpost/consumer_sentiment/output/umich_figures/gaspx/1-month_gas_
+zscore_time_series.png Graphic file (type png)
+<use /Users/danpost/consumer_sentiment/output/umich_figures/gaspx/1-month_gas_z
+score_time_series.png>
 Package pdftex.def Info: /Users/danpost/consumer_sentiment/output/umich_figures
-/gaspx/regressor_comp.png  used on input line 24.
-(pdftex.def)             Requested size: 325.215pt x 162.6071pt.
+/gaspx/1-month_gas_zscore_time_series.png  used on input line 24.
+(pdftex.def)             Requested size: 325.215pt x 195.1272pt.
+</Users/danpost/consumer_sentiment/output/umich_figures/gaspx/1-yr_gas_zscore_t
+ime_series.png, id=48, 722.7pt x 433.62pt>
+File: /Users/danpost/consumer_sentiment/output/umich_figures/gaspx/1-yr_gas_zsc
+ore_time_series.png Graphic file (type png)
+<use /Users/danpost/consumer_sentiment/output/umich_figures/gaspx/1-yr_gas_zsco
+re_time_series.png>
+Package pdftex.def Info: /Users/danpost/consumer_sentiment/output/umich_figures
+/gaspx/1-yr_gas_zscore_time_series.png  used on input line 25.
+(pdftex.def)             Requested size: 325.215pt x 195.1272pt.
+</Users/danpost/consumer_sentiment/output/umich_figures/gaspx/5-yr_gas_zscore_t
+ime_series.png, id=49, 722.7pt x 433.62pt>
+File: /Users/danpost/consumer_sentiment/output/umich_figures/gaspx/5-yr_gas_zsc
+ore_time_series.png Graphic file (type png)
+<use /Users/danpost/consumer_sentiment/output/umich_figures/gaspx/5-yr_gas_zsco
+re_time_series.png>
+Package pdftex.def Info: /Users/danpost/consumer_sentiment/output/umich_figures
+/gaspx/5-yr_gas_zscore_time_series.png  used on input line 26.
+(pdftex.def)             Requested size: 325.215pt x 195.1272pt.
+ [2 </Users/danpost/consumer_sentiment/output/umich_figures/gaspx/1-month_gas_z
+score_time_series.png> </Users/danpost/consumer_sentiment/output/umich_figures/
+gaspx/1-yr_gas_zscore_time_series.png> </Users/danpost/consumer_sentiment/outpu
+t/umich_figures/gaspx/5-yr_gas_zscore_time_series.png>]
 </Users/danpost/consumer_sentiment/output/umich_figures/gaspx/model_month_chg_g
-as1_party_comp.png, id=26, 722.7pt x 433.62pt>
+as1_party_comp.png, id=57, 722.7pt x 433.62pt>
 File: /Users/danpost/consumer_sentiment/output/umich_figures/gaspx/model_month_
 chg_gas1_party_comp.png Graphic file (type png)
 <use /Users/danpost/consumer_sentiment/output/umich_figures/gaspx/model_month_c
 hg_gas1_party_comp.png>
 Package pdftex.def Info: /Users/danpost/consumer_sentiment/output/umich_figures
-/gaspx/model_month_chg_gas1_party_comp.png  used on input line 38.
+/gaspx/model_month_chg_gas1_party_comp.png  used on input line 40.
 (pdftex.def)             Requested size: 325.215pt x 195.1272pt.
 </Users/danpost/consumer_sentiment/output/umich_figures/gaspx/model_month_chg_g
-as5_party_comp.png, id=27, 722.7pt x 433.62pt>
+as5_party_comp.png, id=58, 722.7pt x 433.62pt>
 File: /Users/danpost/consumer_sentiment/output/umich_figures/gaspx/model_month_
 chg_gas5_party_comp.png Graphic file (type png)
 <use /Users/danpost/consumer_sentiment/output/umich_figures/gaspx/model_month_c
 hg_gas5_party_comp.png>
 Package pdftex.def Info: /Users/danpost/consumer_sentiment/output/umich_figures
-/gaspx/model_month_chg_gas5_party_comp.png  used on input line 39.
+/gaspx/model_month_chg_gas5_party_comp.png  used on input line 41.
 (pdftex.def)             Requested size: 325.215pt x 195.1272pt.
-
-[2 </Users/danpost/consumer_sentiment/output/umich_figures/gaspx/regressor_comp
-.png> </Users/danpost/consumer_sentiment/output/umich_figures/gaspx/model_month
-_chg_gas1_party_comp.png>]
+ [3 </Users/danpost/consumer_sentiment/output/umich_figures/gaspx/model_month_c
+hg_gas1_party_comp.png> </Users/danpost/consumer_sentiment/output/umich_figures
+/gaspx/model_month_chg_gas5_party_comp.png>]
 </Users/danpost/consumer_sentiment/output/umich_figures/gaspx/model_precise_chg
-_gas1_party_comp.png, id=39, 722.7pt x 433.62pt>
+_gas1_party_comp.png, id=69, 722.7pt x 433.62pt>
 File: /Users/danpost/consumer_sentiment/output/umich_figures/gaspx/model_precis
 e_chg_gas1_party_comp.png Graphic file (type png)
 <use /Users/danpost/consumer_sentiment/output/umich_figures/gaspx/model_precise
 _chg_gas1_party_comp.png>
 Package pdftex.def Info: /Users/danpost/consumer_sentiment/output/umich_figures
-/gaspx/model_precise_chg_gas1_party_comp.png  used on input line 50.
+/gaspx/model_precise_chg_gas1_party_comp.png  used on input line 52.
 (pdftex.def)             Requested size: 325.215pt x 195.1272pt.
 </Users/danpost/consumer_sentiment/output/umich_figures/gaspx/model_precise_chg
-_gas5_party_comp.png, id=40, 722.7pt x 433.62pt>
+_gas5_party_comp.png, id=70, 722.7pt x 433.62pt>
 File: /Users/danpost/consumer_sentiment/output/umich_figures/gaspx/model_precis
 e_chg_gas5_party_comp.png Graphic file (type png)
 <use /Users/danpost/consumer_sentiment/output/umich_figures/gaspx/model_precise
 _chg_gas5_party_comp.png>
 Package pdftex.def Info: /Users/danpost/consumer_sentiment/output/umich_figures
-/gaspx/model_precise_chg_gas5_party_comp.png  used on input line 51.
+/gaspx/model_precise_chg_gas5_party_comp.png  used on input line 53.
 (pdftex.def)             Requested size: 325.215pt x 195.1272pt.
- [3 </Users/danpost/consumer_sentiment/output/umich_figures/gaspx/model_month_c
-hg_gas5_party_comp.png> </Users/danpost/consumer_sentiment/output/umich_figures
-/gaspx/model_precise_chg_gas1_party_comp.png>]
+ [4 </Users/danpost/consumer_sentiment/output/umich_figures/gaspx/model_precise
+_chg_gas1_party_comp.png> </Users/danpost/consumer_sentiment/output/umich_figur
+es/gaspx/model_precise_chg_gas5_party_comp.png>]
 </Users/danpost/consumer_sentiment/output/umich_figures/gaspx/model_level_gas1_
-party_comp.png, id=49, 722.7pt x 433.62pt>
+party_comp.png, id=78, 722.7pt x 433.62pt>
 File: /Users/danpost/consumer_sentiment/output/umich_figures/gaspx/model_level_
 gas1_party_comp.png Graphic file (type png)
 <use /Users/danpost/consumer_sentiment/output/umich_figures/gaspx/model_level_g
 as1_party_comp.png>
 Package pdftex.def Info: /Users/danpost/consumer_sentiment/output/umich_figures
-/gaspx/model_level_gas1_party_comp.png  used on input line 62.
+/gaspx/model_level_gas1_party_comp.png  used on input line 64.
 (pdftex.def)             Requested size: 325.215pt x 195.1272pt.
 </Users/danpost/consumer_sentiment/output/umich_figures/gaspx/model_level_gas5_
-party_comp.png, id=50, 722.7pt x 433.62pt>
+party_comp.png, id=79, 722.7pt x 433.62pt>
 File: /Users/danpost/consumer_sentiment/output/umich_figures/gaspx/model_level_
 gas5_party_comp.png Graphic file (type png)
 <use /Users/danpost/consumer_sentiment/output/umich_figures/gaspx/model_level_g
 as5_party_comp.png>
 Package pdftex.def Info: /Users/danpost/consumer_sentiment/output/umich_figures
-/gaspx/model_level_gas5_party_comp.png  used on input line 63.
+/gaspx/model_level_gas5_party_comp.png  used on input line 65.
 (pdftex.def)             Requested size: 325.215pt x 195.1272pt.
-
-[4 </Users/danpost/consumer_sentiment/output/umich_figures/gaspx/model_precise_
-chg_gas5_party_comp.png> </Users/danpost/consumer_sentiment/output/umich_figure
-s/gaspx/model_level_gas1_party_comp.png>] [5 </Users/danpost/consumer_sentiment
-/output/umich_figures/gaspx/model_level_gas5_party_comp.png>]
-(./umich_gaspx_responsiveness_memo.aux)
+ [5 </Users/danpost/consumer_sentiment/output/umich_figures/gaspx/model_level_g
+as1_party_comp.png> </Users/danpost/consumer_sentiment/output/umich_figures/gas
+px/model_level_gas5_party_comp.png>] (./umich_gaspx_responsiveness_memo.aux)
  ***********
 LaTeX2e <2023-11-01> patch level 1
 L3 programming layer <2024-02-20>
  ***********
-
-
-Package rerunfilecheck Warning: File `umich_gaspx_responsiveness_memo.out' has 
-changed.
-(rerunfilecheck)                Rerun to get outlines right
-(rerunfilecheck)                or use package `bookmark'.
-
-Package rerunfilecheck Info: Checksums for `umich_gaspx_responsiveness_memo.out
-':
-(rerunfilecheck)             Before: D41D8CD98F00B204E9800998ECF8427E;0
-(rerunfilecheck)             After:  D736E6991E32F711BC26EFD212E2CC40;1708.
+Package rerunfilecheck Info: File `umich_gaspx_responsiveness_memo.out' has not
+ changed.
+(rerunfilecheck)             Checksum: D736E6991E32F711BC26EFD212E2CC40;1708.
  ) 
 Here is how much of TeX's memory you used:
- 9571 strings out of 474116
- 152753 string characters out of 5743682
+ 9598 strings out of 474116
+ 154615 string characters out of 5743682
  1933187 words of memory out of 5000000
- 31827 multiletter control sequences out of 15000+600000
- 562006 words of font info for 50 fonts, out of 8000000 for 9000
+ 31853 multiletter control sequences out of 15000+600000
+ 562314 words of font info for 51 fonts, out of 8000000 for 9000
  1141 hyphenation exceptions out of 8191
- 75i,11n,79p,968b,446s stack positions out of 10000i,1000n,20000p,200000b,200000s
-</usr/local/texlive/2024/texmf-dist/fonts/type1/public/amsfonts/cm/cmbx12.pfb
-></usr/local/texlive/2024/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi10.pfb>
-</usr/local/texlive/2024/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi7.pfb></
-usr/local/texlive/2024/texmf-dist/fonts/type1/public/amsfonts/cm/cmr10.pfb></us
-r/local/texlive/2024/texmf-dist/fonts/type1/public/amsfonts/cm/cmr6.pfb></usr/l
-ocal/texlive/2024/texmf-dist/fonts/type1/public/amsfonts/cm/cmr7.pfb></usr/loca
-l/texlive/2024/texmf-dist/fonts/type1/public/amsfonts/cm/cmr8.pfb>
-Output written on umich_gaspx_responsiveness_memo.pdf (5 pages, 529181 bytes).
+ 75i,11n,79p,968b,451s stack positions out of 10000i,1000n,20000p,200000b,200000s
+</usr/local/texlive/2024/texmf-dist/fonts/type1/public/amsfonts/cm/cmbx10.pfb
+></usr/local/texlive/2024/texmf-dist/fonts/type1/public/amsfonts/cm/cmbx12.pfb>
+</usr/local/texlive/2024/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi10.pfb><
+/usr/local/texlive/2024/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi7.pfb></u
+sr/local/texlive/2024/texmf-dist/fonts/type1/public/amsfonts/cm/cmr10.pfb></usr
+/local/texlive/2024/texmf-dist/fonts/type1/public/amsfonts/cm/cmr6.pfb></usr/lo
+cal/texlive/2024/texmf-dist/fonts/type1/public/amsfonts/cm/cmr7.pfb></usr/local
+/texlive/2024/texmf-dist/fonts/type1/public/amsfonts/cm/cmr8.pfb>
+Output written on umich_gaspx_responsiveness_memo.pdf (5 pages, 731730 bytes).
 PDF statistics:
- 99 PDF objects out of 1000 (max. 8388607)
- 59 compressed objects within 1 object stream
+ 127 PDF objects out of 1000 (max. 8388607)
+ 81 compressed objects within 1 object stream
  16 named destinations out of 1000 (max. 500000)
- 46 words of extra memory for PDF output out of 10000 (max. 10000000)
+ 104 words of extra memory for PDF output out of 10000 (max. 10000000)
 

@@ -15,21 +15,23 @@ This memo summarizes the correlational relationship between observed gas prices 
 
 These plots are simple averages of gas price expectations by partisan affiliation collapsed on month-year. Independents, Republicans, and Democrats' gas price expectations were similar matching until around Joe Biden's election/inauguration (denoted by the two red vertical dashed lines), when Republicans' expectations spiked and, to a lesser extent, so did Independents'. During the Biden presidency, each of the three groups followed roughly similar trends, at different levels. \\
 
-\centering \includegraphics[width=4.5in]{gas1_levels.png} \\
-\includegraphics[width=4.5in]{gas5_levels.png}
+\centering \includegraphics[width=4.5in]{gas1_party_comp.png} \\
+\includegraphics[width=4.5in]{gas5_party_comp.png}
 
 \raggedright \subsection{Comparing Regressors} 
 For context, here is a basic time-series comparing the regressors used in the various models above: \\
 \vspace{0.1in}
-\centering \includegraphics[width=4.5in]{regressor_comp.png} 
+\centering \includegraphics[width=4.5in]{1-month_gas_zscore_time_series.png} 
+\includegraphics[width=4.5in]{1-yr_gas_zscore_time_series.png} 
+\includegraphics[width=4.5in]{5-yr_gas_zscore_time_series.png} 
 
 \raggedright \subsection{Gas Price Monthly Difference Model}
 
-\noindent For all of the following models, I run separate regressions for sub-samples organized around 1) partisan affiliation (democrats, republicans, and independents), 2) by whether Joe Biden is president or not (the Biden sub-sample begins January, 2021, and 3) for individuals' 1-year and 5-year gas expectations. Therefore, between models, only the regressor changes. 
+\noindent For all of the following models, I run separate regressions for sub-samples organized around 1) partisan affiliation (democrats, republicans, and independents), 2) by whether Joe Biden is president or not (the Biden sub-sample begins January, 2021, and 3) for individuals' 1-year and 5-year gas expectations. Therefore, between models, \textbf{only the regressor changes}. In order to properly scale the observed gas price changes, I use the z-score of a monthly, yearly, or 5-year gas price change for 1) the Biden presidency, where there was greater variance in short-term gas price changes and 2) prior to the Biden presidency, where there was lesser variance in short-term gas price changes. 
 
 The gas price monthly difference model is represented by this equation:
 \begin{gather}
-	 \text{GAS\_PX\_CHG\_EXP}_{h\text{, }p\text{, }t\text{, i}} = \alpha_0 + \beta_1 \text{GAS\_PX\_CHG}_t + \epsilon_{h\text{, }p\text{, }t\text{, i}}
+	 \text{GAS\_PX\_CHG\_EXP}_{h\text{, }p\text{, }t\text{, i}} = \alpha_0 + \beta_1 Z(\text{GAS\_PX\_CHG}_t) + \epsilon_{h\text{, }p\text{, }t\text{, i}}
 \end{gather}
 where $\Delta \text{GAS\_PX}_e\text{, horizon}$ is the individuals' expected price change in gasoline and $\Delta \text{GAS\_PX}$ is the change in nominal gas price level from the previous month. For both 1-year and 5-year gas price expectations, I use the month-by-month change in gas prices as the independent variable. \\
 \vspace{0.1in}
