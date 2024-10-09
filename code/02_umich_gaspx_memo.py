@@ -36,7 +36,7 @@ for gas_var, horizon_label in zip(['GAS1', 'GAS5'], ['1-Year', '5-Year']):
     umich_microdata_df[gas_var] = pd.to_numeric(umich_microdata_df[gas_var], errors='coerce') * 0.01
     collapsed_df = (umich_microdata_df.groupby(['date', 'dem', 'rep', 'independent'])
                     [[gas_var]].mean().reset_index())
-    plt.figure(figsize=(10, 6))
+    plt.figure(figsize=(14, 7))    
     colors = plt.get_cmap('tab10')
     for i, (party, party_label) in enumerate(zip(['dem', 'rep', 'independent'], 
             ['Democrats', 'Republicans', 'Independents'])):
@@ -46,18 +46,21 @@ for gas_var, horizon_label in zip(['GAS1', 'GAS5'], ['1-Year', '5-Year']):
             linewidth=0.25)
 
         party_df[f'{gas_var}_3ma'] = party_df[gas_var].rolling(window=3).mean()
-        plt.plot(party_data['date'], party_df[f'{gas_var}_3ma'], 
+        plt.plot(party_df['date'], party_df[f'{gas_var}_3ma'], 
                 label=f'{party_label} 3-Month MA', color=color, linestyle='-', linewidth=1.5)
 
-    plt.axvline(pd.to_datetime('2021-01-01'), color='black', linewidth=2.5,
-                linestyle='--', label='Joe Biden Inauguration')
+    plt.axvline(pd.to_datetime('2020-03-01'), color='grey', linewidth=3, 
+                linestyle='--', label='COVID-19 Pandemic Outbreak')
+    plt.axvline(pd.to_datetime('2020-12-01'), color='brown', linewidth=3, 
+                linestyle='--', label='Joe Biden Election')
     plt.axhline(0, color='black', linewidth=2.5, linestyle='-')
 
     plt.grid(True)
     plt.title(f'Expected {horizon_label} Change in Gas Prices by Partisan Affiliation')
     plt.xlabel('Date')
     plt.ylabel(f'Expected {horizon_label} Change in Gas Prices')
-    plt.legend()
+    plt.legend(loc='upper left')
+    plt.tight_layout()
     plt.savefig(f'{gas_figures}/{gas_var.lower()}_party_comp.png')
     plt.show()
 
@@ -188,46 +191,64 @@ coefficients_df = pd.DataFrame(coefficients_list,
                                    ])
 coefficients_df.to_csv(f'{gas_figures}/coefficients_table.csv', index=False)
 
+
+
+def plot_regression_coefficients(coefficients_df, horizon, 
+                                 umich_lab, model, model_lab, parties, party_labels, output_file):  
+    fig, ax = plt.subplots(figsize=(12, 8))
+    for i, (party, party_lab) in enumerate(zip(parties, party_labels)):
+        party_df = coefficients_df[(coefficients_df['model'] == model) 
+                               & (coefficients_df['party'] == party)
+                               & (coefficients_df['horizon'] == horizon)]
+        if not party_df.empty:
+            biden_1_beta_1 = party_df[party_df['biden'] == 1]['beta_1'].values[0]
+            biden_0_beta_1 = party_df[party_df['biden'] == 0]['beta_1'].values[0]
+
+            biden_1_beta_1_se = party_df[party_df['biden'] == 1]['beta_1_se'].values[0]
+            biden_0_beta_1_se = party_df[party_df['biden'] == 0]['beta_1_se'].values[0]
+
+            biden_1_beta_0 = party_df[party_df['biden'] == 1]['beta_0'].values[0]
+            biden_0_beta_0 = party_df[party_df['biden'] == 0]['beta_0'].values[0]
+
+            x_pos_biden_0_slope = i - 0.3
+            x_pos_biden_1_slope = i - 0.1
+
+            ax.bar(x_pos_biden_0_slope, biden_0_beta_1, 0.2, yerr=1.96 * biden_0_beta_1_se, 
+                   color='r', alpha=0.6, label='Trump Presidency (slope)' if i == 0 else None)
+            ax.bar(x_pos_biden_1_slope, biden_1_beta_1, 0.2, yerr=1.96 * biden_1_beta_1_se, 
+                   color='b', alpha=0.6, label='Biden Presidency (slope)' if i == 0 else None)
+
+            x_pos_biden_0_intercept = i + 0.1
+            x_pos_biden_1_intercept = i + 0.3
+
+            ax.bar(x_pos_biden_0_intercept, biden_0_beta_0, 0.2, yerr=1.96 * biden_0_beta_1_se, 
+                   color='r', alpha=0.4, hatch='//', 
+                   label='Trump Presidency (intercept)' if i == 0 else None)
+            ax.bar(x_pos_biden_1_intercept, biden_1_beta_0, 0.2, yerr=1.96 * biden_1_beta_1_se, 
+                   color='b', alpha=0.4, hatch='//', 
+                   label='Biden Presidency (intercept)' if i == 0 else None)
+
+    ax.set_xticks(np.arange(len(party_labels)))
+    ax.set_xticklabels(party_labels)
+    ax.set_ylabel('Point Estimate')
+    ax.set_title(f'{umich_lab} Estimates by Partisan Affiliation for {model_lab}')
+    ax.legend(loc='upper left')
+    plt.grid(True)
+    plt.savefig(output_file)
+    plt.show()
+
 models=['model_month_chg', 'model_precise_chg', 'model_level']
 model_labs=['Gas Price Monthly Difference Model', 'Gas Price Precise Difference Model',
            'Gas Price Levels Model']
 gas_vars=['GAS1', 'GAS5']
-horizons = ['1', '5']
+horizons = ['1-yr.', '5-yr.']
 gas_labels=['1-Year Gas Price Expected Change', '5-Year Gas Price Expected Change']
 parties=['dem', 'rep', 'independent']
 party_labels=['Democrats', 'Republicans', 'Independents']
 
-for gas_var, gas_label, horizon in zip(gas_vars, gas_labels, horizons):
-    for model, model_lab in zip(models, model_labs):
-        fig, ax = plt.subplots(figsize=(10, 6))
-        for i, (party, party_label) in enumerate(zip(parties, party_labels)):
-            party_df = coefficients_df[(coefficients_df['model'] == model) 
-                                       & (coefficients_df['party'] == party)]
-        
-            biden_1_val = (party_df[party_df['biden'] == 1][party_df['horizon']==f'{horizon}-yr.']
-                        ['beta_1'].values[0])
-            biden_0_val = (party_df[party_df['biden'] == 0]['beta_1']
-                        [party_df['horizon']==f'{horizon}-yr.'].values[0])
-        
-            biden_1_se = (party_df[party_df['biden'] == 1][party_df['horizon']==f'{horizon}-yr.']
-                        ['beta_1_se'].values[0])
-            biden_0_se = (party_df[party_df['biden'] == 0][party_df['horizon']==f'{horizon}-yr.']
-                        ['beta_1_se'].values[0])
-        
-            x_pos_biden_0 = i - 0.2
-            x_pos_biden_1 = i + 0.2
-        
-            ax.bar(x_pos_biden_0, biden_0_val, 0.4, yerr=1.96 * biden_0_se, 
-               color='r', alpha=0.6, label=f'Trump Presidency' if i == 0 else "")
-            ax.bar(x_pos_biden_1, biden_1_val, 0.4, yerr=1.96 * biden_1_se, 
-               color='b', alpha=0.6, label=f'Biden Presidency' if i == 0 else "")
-            
-        ax.set_xticks(np.arange(len(parties)))
-        ax.set_xticklabels(party_labels)
-        #ax.set_xlabel('Political Party')
-        ax.set_ylabel('Point Estimate')
-        ax.set_title(f'{gas_label} Estimates by Partisan Affiliation for {model_lab}')
-        ax.legend(loc='upper left')
-        plt.grid(True)
-        plt.savefig(f'{gas_figures}/{model}_{gas_var.lower()}_party_comp.png')
-        plt.show()
+for gas_var, gas_lab in zip(gas_vars, gas_labels):
+    for horizon, model_lab in zip(horizons, model_labs):
+        for model in models:
+            plot_regression_coefficients(coefficients_df, horizon, gas_lab, model, 
+                                         model_lab, parties, party_labels, 
+                                         f'{gas_figures}/{gas_var.lower()}_{model}_party_comp.png')

@@ -5,7 +5,7 @@
 \usepackage{amsmath}
 \usepackage{hyperref}
 \usepackage{threeparttable}
-\usepackage{subfig}
+\usepackage{subcaption}
 
 \title{University of Michigan's Surveys of Consumers Respondents' Sensitivity to Macroeconomic Conditions}
 \author{Daniel Posthumus}
@@ -16,76 +16,176 @@
 
 \section{Introduction}
 
-Previous has demonstrated that Republicans and Democrats experience the economy very differently, depending on whether the White House is occupied by a President of their party or not -- previous \href{https://www.briefingbook.info/p/asymmetric-amplification-and-the}{research} by Cummings and Mahoney has shown this bias to be \textit{asymmetric}, with Republicans' partisan bias estimated to be two and a half times larger than Democrats'.
+We know that Republicans and Democrats experience the economy very differently, depending on whether the White House is occupied by a President of their party or not. Previous \href{https://www.briefingbook.info/p/asymmetric-amplification-and-the}{research} by Cummings and Mahoney has shown this bias to be \textit{asymmetric}, with Republicans' partisan bias estimated to be two and a half times larger than Democrats'.
 
-We can go beyond breaking down the top-line consumer sentiment index by partisan affiliation: the University of Michigan's Surveys of Consumers asks respondents about a host of different areas of the economy and their attitudes. The Survey only started to ask about respondents' partisan affiliation in 2017; so, starting then, we can re-create an aggregate measure of respondents' attitudes towards specific parts of the economy. Using individual-level microdata, for example, we can calculate respondents' net attitudes ((\% who have a positive attitude) - (\% who have a negative attitude) + 100) by partisan affiliation, e.g. for personal financial conditions and broad business conditions:
+We can go beyond breaking down the top-line consumer sentiment index by partisan affiliation: the University of Michigan's Surveys of Consumers asks respondents about a host of different areas of the economy and their attitudes, not all of which are directly used in the calculation of the headline index. Starting in 2017, we can therefore re-create an aggregate measure of respondents' attitudes towards specific parts of the economy, split up by party.\footnote{The Survey only started to ask about respondents' partisan affiliation in 2017.} Using individual-level microdata, for example, we can calculate respondents' net attitudes ((\% who have a positive attitude) - (\% who have a negative attitude) + 100) by partisan affiliation, e.g. for personal financial conditions and broad business conditions. 
 
-\centering \includegraphics[width=6in]{pago_r_time_series.png} \\
-\includegraphics[width=6in]{bago_r_time_series.png}
+These descriptives, as we'll demonstrate, motivate an analysis of the association between observed economic variables and what people feel about the economy--and comparing these sensitivities between Democrats, Republicans, and Independents. At a high level, we regress changes in economic conditions on respondents' attitudes towards those specific factors--running a separate regression for whether Biden is president or not, as well as separate regressions for each partisan affiliation. One can thus think of the intercept in this model as indicating a partisan pre-set bias that varies by who is President and the slope term as respondents' sensitivity to the changing economy. What we find matches Cummings and Mahoney's previous findings: Republicans consistently display the strongest biases in formulating their attitudes towards the economy. 
 
-\raggedright Using these descriptive aggregates, it's clear Republicans and Democrats experience the economy differently. In this project, we attempt to decompose those differences in attitudes towards specific parts of the economy into 1) differing pre-set biases and 2) differing sensitivity to changes in observed economic conditions. We do this through simple univariate OLS models, with standardized changes in observed economic variables as the regressors. 
+\section{Motivation - Descriptive Evidence of Partisan Bias}
 
-\section{Gas Price Expectations}
+We know that voters' ideas about the economy are not a direct result of observed economic conditions; instead, voters filter their beliefs about the economy through attitudes towards government economic policy, which is in turn shaped by the partisan identity of the president. As the graphs below suggest, Republicans and Democrats reversed their respective attitudes towards government economic policy and--with some parallel shifts because of COVID and later inflationary dynamics--also towards both personal and broad economic conditions nearly exactly when Joe Biden took office.\footnote{The moving average smoothing makes this switch look much less drastic than the raw data suggests.}
 
-To start with, the UMich survey asks respondents for their predicted change in gas prices over the next 1) one-year and 2) five-year periods. We can match those responses with observed gas price changes using the following model: 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% govt/bago/pago panel of time-series
+\begin{figure}[ht!]
+  \centering
+  \begin{subfigure}[b]{0.49\textwidth}
+    \centering
+    \includegraphics[width=\textwidth]{govt_r_time_series.png}
+   % \caption{Government Economic Policy}
+    \label{fig:govt_time_series}
+  \end{subfigure}
+  \begin{subfigure}[b]{0.49\textwidth}
+    \centering
+    \includegraphics[width=\textwidth]{pago_r_time_series.png}
+   % \caption{Personal Financial Conditions}
+    \label{fig:pago_time_series}
+  \end{subfigure}
+   \begin{subfigure}[b]{0.5\textwidth}
+    \centering
+    \includegraphics[width=\textwidth]{bago_r_time_series.png}
+    %\caption{Broad Business Conditions}
+    \label{fig:bago_time_series}
+  \end{subfigure}
+  \caption{Reconstructed Net Attitudes by Partisan Affiliation}
+  \label{fig:panel}
+\end{figure}
+
+These are broad variables; there is no single indicator we can match them to. On the other hand, there is a clear indicator we can point to when it comes to gas prices, home value, inflation, or the stock market. Additionally, respondents of either political stripe are clearly not entirely immune to observed economic conditions: Republicans attitudes towards broad business conditions tanked under the Trump administration and subsequently improved under the Biden administration, presumably because of the COVID shock and recovery. So, we can take a closer look at specific parts of the economy by reconstructing this net attitude for specific questions: 
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% gas1/news_u_pri/hom/rinc/car/pstk panel of time-series
+\begin{figure}[ht!]
+  \centering
+  \begin{subfigure}[b]{0.49\textwidth}
+    \centering
+    \includegraphics[width=\textwidth]{gas1_party_comp.png}
+    %\caption{Predicted 1-Year Change in Gas Prices}
+    \label{fig:gas1_time_series}
+  \end{subfigure}
+  \begin{subfigure}[b]{0.49\textwidth}
+    \centering
+    \includegraphics[width=\textwidth]{newsrn_u_pri_time_series.png}
+   % \caption{Reported Unfavorable News Coverage of Inflation}
+    \label{fig:newsrn_u_pri_time_series}
+  \end{subfigure}
+   \begin{subfigure}[b]{0.49\textwidth}
+    \centering
+    \includegraphics[width=\textwidth]{hom_r_time_series.png}
+    %\caption{Home-Buying Conditions}
+    \label{fig:hom_time_series}
+  \end{subfigure}
+   \begin{subfigure}[b]{0.49\textwidth}
+    \centering
+    \includegraphics[width=\textwidth]{rinc_r_time_series.png}
+    %\caption{Real Household Income}
+    \label{fig:rinc_time_series}
+  \end{subfigure}
+   \begin{subfigure}[b]{0.49\textwidth}
+    \centering
+    \includegraphics[width=\textwidth]{PSTK_time_series.png}
+    %\caption{Predicted Likelihood of Positive Stock Market Return}
+    \label{fig:pstk_time_series}
+  \end{subfigure}
+   \begin{subfigure}[b]{0.49\textwidth}
+    \centering
+    \includegraphics[width=\textwidth]{veh_r_time_series.png}
+    %\caption{Vehicle-Buying Conditions}
+    \label{fig:veh_time_series}
+  \end{subfigure}
+  \caption{Reconstructed Net Attitudes by Partisan Affiliation}
+  \label{fig:panel}
+\end{figure}
+
+Some of these time-series make more sense than others; we saw a volatility in prices--both overall and in gas prices--under President Biden we simply didn't see under President Trump. However, why did voters of every partisan affiliation have their attitudes towards buying a car and house enter a sustained and near-identical decrease nearly exactly when President Biden took office? Then, on the other hand, attitudes towards real household income and predicted positive performance of an investment in the stock market neatly follow the pattern set by the broad economic attitudes sketched above -- with Democrats and Republicans reversing their attitudes upon Biden's inauguration. These descriptive plots suggest some mix of partisan bias and observed economic conditions are shaping attitudes towards the economy. This motivates our  analysis of respondent sensitivity to observed economic changes.
+
+\section{Evaluating Respondent Sensitivity and Bias}
+To test whether this is bias or because it was objectively true that the economy was performing better under Trump than Biden, we can match specific questions on the survey to observed economic conditions, as I do in the table below:\footnote{Positive Dummy refers to a dummy variable indicating whether or not a respondent had a positive attitude toward that variable; this simplification of net attitude was necessary because the construction of the net attitude variable is, by necessity, aggregated and not on an individual level. Respondents with either a neutral or negative attitude have a 0 for this outcome variable.}
+\begin{table}[ht!]
+\begin{threeparttable}
+\begin{tabular}{|l|l|l|l|}
+\hline
+\textbf{Section} 							& \textbf{Question on Survey} 	& \textbf{Outcome} 						& \textbf{Regressor} 		\\ \hline
+1-Year Predicted Change in Gas Prices		& GAS1					& GAS								&   National Gas prices \tnote{1} \\ \hline
+Home-Buying Conditions		     			& HOM      				& $\text{HOM}_\text{Positive Dummy}$		&   Zillow Home Index\tnote{2}	\\ \hline
+Unfavorable News Coverage of Inflation    	& NEWS      				& $\text{NEWSRN\_U\_PRI}_\text{Dummy}$  	&   All-Urban CPI\tnote{3}		\\ \hline
+Likelihood of Positive Stock Market Return 	& PSTK     				& PSTK								&   S\&P 500\tnote{4}	 \\ \hline
+Real Household Income     				& RINC      				& $\text{RINC}_\text{Positive Dummy}$		&   Real Family Income\tnote{5} \\ \hline
+Car-Buying Conditions      					& CAR      				& $\text{VEH}_\text{Positive Dummy}$		&   Used Car CPI\tnote{6} \\ \hline
+\end{tabular}
+\begin{tablenotes} 
+\footnotesize
+\item[1] Year-over-year \% change. Source: \href{https://www.eia.gov/dnav/pet/hist/LeafHandler.ashx?n=pet&s=emm_epm0_pte_nus_dpg&f=m}{EIA}
+\item[2] Monthly \% change. Source: \href{https://fred.stlouisfed.org/series/USAUCSFRCONDOSMSAMID}{FRED} 
+\item[3] Monthly \% change. Source: \href{https://fred.stlouisfed.org/series/CPIAUCSL}{FRED}
+\item[4] Year-over-year \% change. Source: \href{https://finance.yahoo.com/quote/\%5EGSPC/}{Yahoo Finance} -- note: I used the closing value for this series at the end of each month.
+\item[5] Year-over-year \% change. Source: \href{https://fred.stlouisfed.org/series/A229RX0}{FRED}
+\item[6] Monthly \% change. Source: \href{https://fred.stlouisfed.org/series/CUSR0000SETA02}{FRED} 
+\end{tablenotes}
+\end{threeparttable}
+\end{table}
+
+Using these pairs of variable, we estimated this regression using OLS:
 \begin{gather}
-	 \text{GAS\_PX\_CHG\_EXP}_{h\text{, }p\text{, }t\text{, i}} = \alpha_0 + \beta_1 Z(\text{GAS\_PX\_CHG}_t) + \epsilon_{h\text{, }p\text{, }t\text{, i}}
+	 \text{OUTCOME}_{p\text{, }t\text{, }i\text{, }a} = \alpha_{0\text{, }p\text{, }a} + \beta_{1\text{, }p\text{, }a} Z(\text{REGRESSOR}_t) + \epsilon_{p\text{, }t\text{, }i\text{, }a}
 \end{gather}
-for $h \in \{\text{1-yr, 5-yr}\}$, $p \in \{\text{Democrat, Republican, Independents}\}$, time $t$, and individual $i$. We run this model separately for whether 1) Biden was president during time $t$; 2) subsamples consisting of only Democrats, Republicans, and Independents; and 3) each horizon $h$. 
+for partisan affiliation $p \in \{\text{Democrat, Republican, Independent}\}$, time $t$, individual $i$, and administration $a \in \{\text{Trump, Biden}\}$. \footnote{Thus, for each economic variable we ran 6 regressions: for 1) Biden-Republican, 2) Biden-Democrat, 3) Biden-Independent, 4) Trump-Republican, 5) Trump-Democrat, and 6) Trump-Independent subsamples.The regressors listed above were also normalized, to reflect that variance in economic conditions were widely different during Biden's vs. Trump's Administration: we normalized the distribution of the percent changes so that a zero value for the regressor would indicate an average percent change during that particular Administration.} Estimates for $\alpha_0$ and $\beta_1$ are plotted below, with 95\% confidence interval bars.
 
-We tried several model approaches, in which the regressor varied. We tried to use 1) the level gas price, 2) the corresponding historical gas price percent change (i.e., the 1-year observed gas price change matches to the 1-year expected gas price change), and 3) the monthly gas price percent change. The monthly gas price percent change had the most robust results, although there were difficulties because there was more variance of monthly gas price changes under President Biden than President Trump. To counter this, we calculated the z-score for each month's percent change in gas prices, within the distribution of changes during 1) Trump's presidency and 2) Biden's presidency. (We follow this standardization methodology for all analysis in this project.)
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% plotted regression coefficients
+\begin{figure}[ht!]
+  \centering
+  \begin{subfigure}[b]{0.49\textwidth}
+    \centering
+    \includegraphics[width=\textwidth]{gas1_model_precise_chg_party_comp.png}
+    %\caption{Predicted 1-Year Change in Gas Prices}
+    \label{fig:gas1}
+  \end{subfigure}
+  \begin{subfigure}[b]{0.49\textwidth}
+    \centering
+    \includegraphics[width=\textwidth]{yoy_news_pri_party_comp_micro.png}
+   % \caption{Reported Unfavorable News Coverage of Inflation}
+    \label{fig:newsrn}
+  \end{subfigure}
+   \begin{subfigure}[b]{0.49\textwidth}
+    \centering
+    \includegraphics[width=\textwidth]{month_hom_party_comp_micro.png}
+    %\caption{Home-Buying Conditions}
+    \label{fig:hom}
+  \end{subfigure}
+   \begin{subfigure}[b]{0.49\textwidth}
+    \centering
+    \includegraphics[width=\textwidth]{month_rinc_party_comp_micro.png}
+    %\caption{Real Household Income}
+    \label{fig:rinc}
+  \end{subfigure}
+   \begin{subfigure}[b]{0.49\textwidth}
+    \centering
+    \includegraphics[width=\textwidth]{yoy_pstk_party_comp_micro.png}
+    %\caption{Predicted Likelihood of Positive Stock Market Return}
+    \label{fig:pstk}
+  \end{subfigure}
+   \begin{subfigure}[b]{0.49\textwidth}
+    \centering
+    \includegraphics[width=\textwidth]{month_car_party_comp_micro.png}
+    %\caption{Vehicle-Buying Conditions}
+    \label{fig:veh}
+  \end{subfigure}
+  \caption{Regression Results by Macroeconomic Variable}
+  \label{fig:panel}
+\end{figure}
 
-We find that voters were likelier to predict higher gas price changes under President Biden, even if the percent change from the previous month was exactly average (i.e., the z-score of the change was 0). When this average gas price monthly percent change would occur, Republicans' expected 1-year gas price change would be 4.03 times higher than Democrats', and 1.5 times higher than Independents'. Republicans' expected 5-year gas price change would be 2.28 times higher than Democrats', and 1.16 times higher than Republicans'. 
+Beginning with gas prices, we find that voters were likelier to predict higher gas price changes under President Biden, even if the percent change from the previous month was exactly average (i.e., the z-score of the change was 0). When this average gas price monthly percent change would occur, Republicans' expected 1-year gas price change would be 4.03 times higher than Democrats', and 1.5 times higher than Independents'. Republicans' expected 5-year gas price change would be 2.28 times higher than Democrats', and 1.16 times higher than Republicans'. 
 
-\section{Zillow Home Value Index and Home-Buying Conditions} 
+Reported unfavorable news coverage of inflation had one of the more suggestive descriptive time-series graphs; it appeared that Republicans heard about inflation for longer and more frequently than either Democrats or Independents. Unsurprisingly, there is a significant positive $\beta_1$ coefficient for Democrats, Republicans, and Independents during either the Trump or Biden Administration. The gap seen above appears to be driven by pre-set bias ($\alpha_0$), rather than heightened sensitivity to increasing inflation. For an average change in year-over-year inflation, Republicans were 20.07 times likelier to report unfavorable news coverage of inflation under Biden than Trump, while that figure is 5.46 times for Democrats and 7.82 for Independents.
 
-Unlike the gas price prediction question described above, the survey asks respondents about their attitudes towards specific parts of the economy (like home-buying conditions) by asking whether their attitudes are positive, neutral, or negative. To conduct individual-level modeling, we create a dummy variable for whether a respondent has a positive attitude towards the home-buying environment and a 0 if they have a neutral or negative attitude. Then we run the following model:
-\begin{gather} 
-	\text{HOM\_DUMMY}_{p,t,m,i} = \alpha_0 + \beta_1 Z(\text{ZILLOW\_INDEX\_CHG}_{t}) + \epsilon_{p,t,m}
-\end{gather} 
-where ZILLOW\_INDEX\_CHG is the monthly percent change in Zillow's Home Value Index, of which we take the z-score and HOM\_DUMMY is a dummy for whether individual $i$ has a positive attitude towards home-buying condition. The other variables are identical to those used in Equation (1). 
+For the mean monthly percent change in home values, Republicans were 3.09 times likelier to have positive home-buying conditions under President Trump than President Biden. That multiplier is 1.92 for Democrats and 2.43 for Independents. Critically, Republicans and Independents' $\beta_1$ is estimated to be insignificant under Biden--suggesting that for any change larger in magnitude than the mean monthly percent change, Republicans' and Independents' attitudes towards home-buying conditions wouldn't change. On the other hand, Democrats' $\beta_1$ coefficient was significant and positive under Biden as well as Trump, while Republicans' and Independents' estimated $\beta_1$ coefficients were significant and positive during Trump's Administration.
 
-First we can see a time-series of the re-scaled regressor. \\
-\centering \includegraphics[width=6in]{zillow_zscore.png}
+For real household income, none of Democrats, Republicans, nor Independents had a statistically significant $\beta_1$ coefficient--indicating that whether they held positive attitudes towards real family incomes was set by who was President, rather than observed economic conditions. Democrats held a more positive view towards household income under Biden than Trump, while Republicans and Independents were the opposite. However, these findings match earlier work on the \textit{asymmetric} nature of partisan bias. Democrats, for a mean monthly percent change in real family income, were 1.18 times likelier to hold a positive attitude under President Biden than President Trump. Republicans, on the other hand, were 2.35 times likelier to hold a positive attitude under President Trump than President Biden, for a mean monthly percent change in real family incomes. This approximation of partisan bias is nearly twice as large for Republicans than Democrats. 
 
-\raggedright For an mean monthly percent change in home values, Republicans were 3.09 times likelier to have positive home-buying conditions under President Trump than President Biden. That multiplier is 1.92 for Democrats and 2.43 for Independents. Critically, Republicans and Independents' $\beta_1$ is estimated to be insignificant under Biden--suggesting that for any change larger in magnitude than the mean monthly percent change, Republicans' and Independents' attitudes towards home-buying conditions wouldn't change. On the other hand, Democrats' $\beta_1$ coefficient was significant positive under Biden as well as Trump, while Republicans' and Independents' estimated $\beta_1$ coefficients were positive significant during Trump's presidency.
+Interestingly, respondents' predicted likelihood of a positive investment in the stock market after one year had the least evidence of partisan bias, as plotted below. Only Independents had a statistically significant $\beta_1$ coefficient estimate, which was positive during the Biden Administration. This is also the only area where Democrats' partisan bias appears to be greater than Republicans'; for an average year-over-year percentage change in the S\&P500, Democrats appear to be 1.24 times likelier to predict a positive stock market return under Biden than Trump, while Republicans appear to be 1.05 times likelier under Trump than Biden. I suspect that this because this question is less ambiguous than those asking about attitudes towards the economy, and the prediction it is asking respondents to make is easier (since 2016, the S\&P500 has only had 2 years with negative return) than asking about the expected gas price change 5 years from now. 
 
-\section{Real Household Income}
-
-The approach for Real Household Income was identical to Home Value: we match FRED's real household income to the University of Michigan's Surveys of Consumers re: attitudes towards whether household income will outpace inflation. Once again, we take a dummy for whether a respondent had a positive attitude and run the same regression using a standardized regressor for monthly percent change for 1) Biden's presidency and 2) Trump's presidency. 
-
-First, none of Democrats, Republicans, nor Independents had a significant $\beta_1$ coefficient--indicating that whether they held positive attitudes towards real family incomes was set by who was President, rather than observed economic conditions. Democrats held a more positive view towards household income under Biden than Trump, while Republicans and Independents were the opposite. However, these findings match earlier work on the \textit{asymmetric} nature of partisan bias. Democrats, for a mean monthly percent change in real family income, were 1.18 times likelier to hold a positive attitude under President Biden than President Trump. Republicans, on the other hand, were 2.35 times likelier to hold a positive attitude under President Trump than President Biden, for a mean monthly percent change in real family incomes. This approximation of partisan bias is nearly twice as large for Republicans than Democrats. These coefficients are plotted below:
-
-\centering \includegraphics[width=6in]{month_rinc_party_comp_micro.png}
-
-\raggedright \section{Used Car CPI and Car-Buying Conditions}
-
-The approach for car-buying conditions is identical to the approaches for real household income and home-buying; here, we match a question on the survey asking after attitudes towards car-buying conditions to the BLS's Used Car CPI. Once again, during the Biden Presidency, none of Democrats, Republicans, nor Independents exhibited a significant $\beta_1$ estimated coefficient; however, each group exhibited a positive significant coefficient. Effectively, this suggests that while above-average changes in used car prices would not have affected respondents' attitudes towards car-buying conditions during Trump's presidency, they did during Biden's presidency with a positive correlation.
-
-Then, for an average monthly percent change in used car prices, Democrats, Republicans, and Independents were likelier to have a positive attitude during the Trump presidency than Biden presidency. This gap is most magnified for Republicans; Democrats were 1.61 times likelier to have a positive attitude during Trump's presidency than Biden's, while Republicans were 2.75 times likelier. These coefficients are plotted below:
-
-\centering \includegraphics[width=6in]{month_car_party_comp_micro.png}
-
-\raggedright \section{S\&P500 and Predicted Likelihood of Positive Stock Market Return}
-
-One question on the Survey asks respondents their predicted likelihood (in percentage form) that an investment in a broad-based stock market index would yield a positive return in one year's time. Thus, for this variable there is no dummy variable creation needed; instead, we just take a respondent's predicted likelihood and use the z-score of the year-over-year percentage difference in the S\&P 500 for 1) Trump's and 2) Biden's presidency. Here we use the year-over-year percent change in the stock market because that is the exact time horizon the question is asking about--asking respondents to look one year into the future.
-
-Interestingly, this question had the least evidence of partisan bias, as plotted below. Only Independents had a significant $\beta_1$ coefficient estimate, a positive one for during the Biden Presidency. This is also the only area where Democrats' partisan bias appears to be greater than Republicans'; for an average year-over-year percentage change in the S\&P500, Democrats appear to be 1.24 times likelier to predict a positive stock market return under Biden than Trump, while Republicans appear to be 1.05 times likelier under Trump than Biden. I suspect that this because this question is less ambiguous than those asking about attitudes towards the economy, and the prediction it is asking respondents to make is easier (since 2016, the S\&P500 has only had 2 negative return years) than asking about the expected gas price change 5 years from now. 
-
-\centering \includegraphics[width=6in]{yoy_pstk_party_comp_micro.png}
-
-\raggedright \section{Headline CPI and Reported Unfavorable News Coverage of Inflation} 
-
-Finally, we match changes in the US Headline CPI to respondents' reported unfavorable coverage of inflation. Two questions on the Consumer Survey ask about what economic topics respondents report having heard news coverage of. To analyze the relationship between responses to these questions and inflation, we create a dummy variable equal to 1 if a respondent answers \textit{either} of these two questions with the option of "unfavorable news coverage of rising prices". Then we used the same model as for the dummy variables described above, although here we also employ the z-score of year-over-year percent changes in headline CPI, since that is the most oft-referenced measure of inflation. First, given the large difference in variance across Trump's and Biden's presidency in headline inflation, standardizing the regressor is key as plotted below:
-
-\centering \includegraphics[width=6in]{headline_cpi_zscore.png}
-
-\raggedright Clearly, there was a spike in inflation under President Biden that didn't occur under Trump. This is reflected in respondents' reported unfavorable news coverage of inflation -- although we can see Republicans' reported coverage happened before Independents' and Democrat's, reached a higher level, and remained elevated longer. 
-
-\centering \includegraphics[width=6in]{newsrn_u_pri_time_series.png}
-
-\raggedright Unsurprisingly, there is a significant positive $\beta_1$ coefficient for Democrats, Republicans, and Independents during either the Trump or Biden presidency. The gap seen above appears to be driven by pre-set bias ($\alpha_0$), rather than heightened sensitivity to increasing inflation. For an average change in year-over-year inflation, Republicans were 20.07 times likelier to report unfavorable news coverage of inflation under Biden than Trump, while that figure is 5.46 times for Democrats and 7.82 for Independents. Those coefficients are plotted below:
-
-\centering \includegraphics[width=6in]{yoy_news_pri_party_comp_micro.png}
+For used car CPI and car-buying conditions, during the Biden Administration, none of Democrats, Republicans, nor Independents exhibited a statistically significant $\beta_1$ estimated coefficient; however, each group exhibited a positive significant coefficient. Effectively, this suggests that while above-average changes in used car prices would not have affected respondents' attitudes towards car-buying conditions during Trump's Administration, they did during Biden's Administration with a positive correlation. Then, for an average monthly percent change in used car prices, Democrats, Republicans, and Independents were likelier to have a positive attitude during the Trump Administration than Biden Administration. This gap is most magnified for Republicans; Democrats were 1.61 times likelier to have a positive attitude during Trump's Administration than Biden's, while Republicans were 2.75 times likelier. 
 
 \end{document}
